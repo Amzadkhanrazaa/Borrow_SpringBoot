@@ -8,6 +8,7 @@ import com.example.borrow.repository.BorrowRequestRepository;
 import com.example.borrow.service.BorrowRequestService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,27 +27,16 @@ public class BorrowRequestServiceImpl implements BorrowRequestService {
 	@Override
 	public BorrowRequestDto create(BorrowRequestDto dto) {
 		if (dto.getId() != null) {
-			throw new NotFoundException("BorrowRequest id=" + dto.getId() + " not found");
+			throw new 
+//			ResponseStatusException(null)
+			NotFoundException("BorrowRequest id=" + dto.getId() + " not found");
 		}
 
 		BorrowRequest entity = dtoToEntity(dto);
 //		validate(entity);
+//		BorrowRequest.va?
 		// entity.setId(null); // ensure create
 		BorrowRequest saved = repository.save(entity);
-		return entityToDto(saved);
-	}
-
-	@Override
-	public BorrowRequestDto update(Long id, BorrowRequestDto dto) {
-		BorrowRequest existing = repository.findById(id)
-				.orElseThrow(() -> new NotFoundException("BorrowRequest id=" + id + " not found"));
-		// update fields from DTO
-		existing.setBorrowerName(dto.getBorrowerName());
-		existing.setItemId(dto.getItemId());
-		existing.setStartDate(dto.getStartDate());
-		existing.setEndDate(dto.getEndDate());
-		existing.setStatus(dto.getStatus());
-		BorrowRequest saved = repository.save(existing);
 		return entityToDto(saved);
 	}
 
@@ -72,14 +62,22 @@ public class BorrowRequestServiceImpl implements BorrowRequestService {
 		repository.deleteById(id);
 	}
 
+
 	// helper methods
 	@Override
-	public BorrowRequestDto entityToDto(BorrowRequest entity) {
-		if (entity == null)
-			return null;
-		return new BorrowRequestDto(entity.getId(), entity.getBorrowerName(), entity.getItemId(), entity.getStartDate(),
-				entity.getEndDate(), entity.getStatus());
+	public BorrowRequestDto update(Long id, BorrowRequestDto dto) {
+		BorrowRequest existing = repository.findById(id)
+				.orElseThrow(() -> new NotFoundException("BorrowRequest id=" + id + " not found"));
+		// update fields from DTO
+		existing.setBorrowerName(dto.getBorrowerName());
+		existing.setItemId(dto.getItemId());
+		existing.setStartDate(dto.getStartDate());
+		existing.setEndDate(dto.getEndDate());
+		existing.setStatus(dto.getStatus());
+		BorrowRequest saved = repository.save(existing);
+		return entityToDto(saved);
 	}
+	// Write your code to
 
 	@Override
 	public BorrowRequest dtoToEntity(BorrowRequestDto dto) {
@@ -94,10 +92,16 @@ public class BorrowRequestServiceImpl implements BorrowRequestService {
 		entity.setStatus(dto.getStatus());
 		return entity;
 	}
+	@Override
+	public BorrowRequestDto entityToDto(BorrowRequest entity) {
+		if (entity == null)
+			return null;
+		return new BorrowRequestDto(entity.getId(), entity.getBorrowerName(), entity.getItemId(), entity.getStartDate(),
+				entity.getEndDate(), entity.getStatus());
+	}
 
 	public void validate(String fieldName) {
-	//Write your code to 
-	
+
 	}
 
 }
